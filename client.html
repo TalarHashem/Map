@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Details</title>
+</head>
+<body>
+    <h1>Client Details</h1>
+    <div id="client-info"></div>
+
+    <!-- Dropdown for Product -->
+    <div>
+        <label for="product">Select Product:</label>
+        <select id="product">
+            <option value="">Select a Product</option>
+        </select>
+    </div>
+
+    <!-- Dropdown for Equipment -->
+    <div>
+        <label for="equipment">Select Equipment:</label>
+        <select id="equipment" disabled>
+            <option value="">Select Equipment</option>
+        </select>
+    </div>
+
+    <!-- Dropdown for Suppliers -->
+    <div>
+        <label for="supplier">Select Supplier:</label>
+        <select id="supplier" disabled>
+            <option value="">Select Supplier</option>
+        </select>
+    </div>
+
+    <script>
+        // Retrieve the client id from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientId = urlParams.get('id'); // Get the 'id' parameter from the URL
+
+        // Array of clients (you can modify this to retrieve data dynamically)
+        const clients = [
+            {
+                id: 1,
+                name: "Client 1",
+                country: "Saudi Arabia",
+                details: "Client 1 details...",
+                products: {
+                    "Product A": {
+                        "Equipment 1": ["Supplier X", "Supplier Y"],
+                        "Equipment 2": ["Supplier Z"]
+                    },
+                    "Product B": {
+                        "Equipment 3": ["Supplier A", "Supplier B"],
+                        "Equipment 4": ["Supplier C"]
+                    }
+                }
+            },
+            {
+                id: 2,
+                name: "Client 2",
+                country: "Saudi Arabia",
+                details: "Client 2 details...",
+                products: {
+                    "Product C": {
+                        "Equipment 5": ["Supplier D", "Supplier E"],
+                        "Equipment 6": ["Supplier F"]
+                    }
+                }
+            },
+            {
+                id: 3,
+                name: "Client 3",
+                country: "Saudi Arabia",
+                details: "Client 3 details...",
+                products: {
+                    "Product D": {
+                        "Equipment 7": ["Supplier G", "Supplier H"]
+                    }
+                }
+            }
+        ];
+
+        // Find the client by id
+        const client = clients.find(c => c.id == clientId);
+
+        // Display the client information
+        if (client) {
+            document.getElementById('client-info').innerHTML = `
+                <h2>${client.name}</h2>
+                <p>Country: ${client.country}</p>
+                <p>Details: ${client.details}</p>
+            `;
+
+            // Populate product dropdown
+            const productDropdown = document.getElementById('product');
+            for (const product in client.products) {
+                const option = document.createElement('option');
+                option.value = product;
+                option.textContent = product;
+                productDropdown.appendChild(option);
+            }
+
+            // Handle product selection
+            productDropdown.addEventListener('change', function() {
+                const selectedProduct = productDropdown.value;
+                const equipmentDropdown = document.getElementById('equipment');
+                const supplierDropdown = document.getElementById('supplier');
+                
+                // Reset Equipment and Supplier dropdowns
+                equipmentDropdown.innerHTML = '<option value="">Select Equipment</option>';
+                supplierDropdown.innerHTML = '<option value="">Select Supplier</option>';
+                supplierDropdown.disabled = true;
+                equipmentDropdown.disabled = true;
+
+                console.log('Product Selected:', selectedProduct); // Debugging
+
+                if (selectedProduct) {
+                    // Populate equipment dropdown based on selected product
+                    const equipmentOptions = Object.keys(client.products[selectedProduct]);
+                    equipmentOptions.forEach(function(equipment) {
+                        const option = document.createElement('option');
+                        option.value = equipment;
+                        option.textContent = equipment;
+                        equipmentDropdown.appendChild(option);
+                    });
+                    equipmentDropdown.disabled = false; // Enable equipment dropdown
+                }
+            });
+
+            // Handle equipment selection
+            document.getElementById('equipment').addEventListener('change', function() {
+                const selectedProduct = productDropdown.value;
+                const selectedEquipment = this.value; // Corrected this reference
+                const supplierDropdown = document.getElementById('supplier');
+
+                // Reset Supplier dropdown
+                supplierDropdown.innerHTML = '<option value="">Select Supplier</option>';
+                supplierDropdown.disabled = true;
+
+                console.log('Equipment Selected:', selectedEquipment); // Debugging
+
+                if (selectedEquipment) {
+                    // Populate supplier dropdown based on selected product and equipment
+                    const suppliers = client.products[selectedProduct][selectedEquipment];
+                    suppliers.forEach(function(supplier) {
+                        const option = document.createElement('option');
+                        option.value = supplier;
+                        option.textContent = supplier;
+                        supplierDropdown.appendChild(option);
+                    });
+                    supplierDropdown.disabled = false; // Enable supplier dropdown after populating options
+                }
+            });
+        } else {
+            document.getElementById('client-info').innerHTML = `<p>Client not found.</p>`;
+        }
+    </script>
+</body>
+</html>

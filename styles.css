@@ -1,0 +1,17 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+}
+
+#map {
+  height: 100vh;  /* Adjust the height of the map */
+  width: 100%;   /* Make the map take up the full width */
+}
